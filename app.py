@@ -19,12 +19,26 @@ def convert():
         if not filename.endswith(".docx"):
             filename += ".docx"
 
+        # Estilos forzados para tablas y color de texto
+        style = """
+        <style>
+            body { color: black; }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                color: black;
+            }
+        </style>
+        """
+        html_with_style = f"<html><head>{style}</head><body>{html}</body></html>"
+
         # Crear archivo temporal
         with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp:
             output_path = tmp.name
 
         # Convertir HTML a DOCX
-        pypandoc.convert_text(html, "docx", format="html", outputfile=output_path, extra_args=["--standalone"])
+        pypandoc.convert_text(html_with_style, "docx", format="html",
+                              outputfile=output_path, extra_args=["--standalone"])
 
         return send_file(output_path,
                          as_attachment=True,
